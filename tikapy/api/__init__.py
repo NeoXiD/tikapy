@@ -15,6 +15,7 @@ MikroTik Router OS Python API
 import binascii
 import hashlib
 import logging
+from six import raise_from
 
 LOG = logging.getLogger(__name__)
 
@@ -308,7 +309,7 @@ class ApiRos:
         try:
             self.sock.sendall(bytes(string, 'latin-1'))
         except OSError as exc:
-            raise ApiUnrecoverableError("could not send to socket") from exc
+            raise_from(ApiUnrecoverableError("could not send to socket"), exc)
 
     def read_sock(self, length):
         """

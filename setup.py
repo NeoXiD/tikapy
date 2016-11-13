@@ -30,6 +30,10 @@ setup(
         'Programming Language :: Python :: 3.4',
     ],
 
+    install_requires=[
+        'six'
+    ],
+
     packages=[
         'tikapy',
         'tikapy.api',

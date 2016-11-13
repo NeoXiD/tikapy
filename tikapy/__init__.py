@@ -15,6 +15,7 @@ MikroTik RouterOS Python API Clients
 import logging
 import socket
 import ssl
+from six import raise_from
 from .api import ApiError, ApiRos, ApiUnrecoverableError
 
 LOG = logging.getLogger(__name__)
@@ -27,7 +28,7 @@ class ClientError(Exception):
     pass
 
 
-class TikapyBaseClient():
+class TikapyBaseClient(object):
     """
     Base class for functions shared between the SSL and non-SSL API client
     """
@@ -78,7 +79,7 @@ class TikapyBaseClient():
                 raise ValueError('%d is not a valid port number' % value)
             self._port = value
         except ValueError as exc:
-            raise ValueError('invalid port number specified') from exc
+            raise_from(ValueError('invalid port number specified'), exc)
 
     def __del__(self):
         """
@@ -164,7 +165,7 @@ class TikapyBaseClient():
         try:
             self._api.login(user, password)
         except (ApiError, ApiUnrecoverableError) as exc:
-            raise ClientError('could not login') from exc
+            raise_from(ClientError('could not login'), exc)
 
     def talk(self, words):
         """
@@ -179,7 +180,7 @@ class TikapyBaseClient():
             try:
                 return self.tik_to_json(self._api.talk(words))
             except (ApiError, ApiUnrecoverableError) as exc:
-                raise ClientError('could not talk to api') from exc
+                raise_from(ClientError('could not talk to api'), exc)
         raise ValueError('words needs to be a list of strings')
 
     @staticmethod
@@ -200,7 +201,7 @@ class TikapyBaseClient():
                 d['.id'][1:]: d for d in ([x[1] for x in tikoutput])
                 if '.id' in d.keys()}
         except (TypeError, IndexError) as exc:
-            raise ClientError('unable to convert api output to json') from exc
+            raise_from(ClientError('unable to convert api output to json'), exc)
 
 
 class TikapyClient(TikapyBaseClient):
@@ -215,7 +216,7 @@ class TikapyClient(TikapyBaseClient):
         :param address: Remote device address (maybe a hostname)
         :param port: Remote device port (defaults to 8728)
         """
-        super().__init__()
+        super(TikapyClient, self).__init__()
         self.address = address
         self.port = port
 
@@ -232,7 +233,7 @@ class TikapySslClient(TikapyBaseClient):
         :param address: Remote device address (maybe a hostname)
         :param port: Remote device port (defaults to 8728)
         """
-        super().__init__()
+        super(TikapySslClient, self).__init__()
         self.address = address
         self.port = port
 
