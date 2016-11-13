@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 
 #
 # Copyright (c) 2015, VSHN AG, info@vshn.ch
@@ -307,7 +307,7 @@ class ApiRos:
             string - String to send
         """
         try:
-            self.sock.sendall(bytes(string, 'latin-1'))
+            self.sock.sendall(str(string).encode('latin-1'))
         except OSError as exc:
             raise_from(ApiUnrecoverableError("could not send to socket"), exc)
 
